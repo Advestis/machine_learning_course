@@ -1,4 +1,4 @@
-# Machne Learning Course : Practical work
+# Machine Learning Course : Practical work
 
 ## Content 
 
