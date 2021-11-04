@@ -1,0 +1,62 @@
+# Machne Learning Course : Practical work
+
+## Content 
+
+* Python for data science (*py_data_science.ipynb*)
+* Hand-made linear regression (*linreg/*)
+* Logistic regression with sklearn (*logreg.ipynb*)
+* Neural Network with NumPy (*rn_numpy.ipynb*)
+* Neural Network with TensorFlow (*rn_tf.ipynb*)
+
+## Installation
+
+**Note** : the installation instructions here are valid for Unix systems (Linux and Mac). I do not use Windows so I do
+not know the equivalent commands on Windows. Look them up on the internet.
+
+First of all, install git (llok up the internet) then clone this repository on your computer (in your document for example, but that's up to you). To do that,
+on Unix open a terminal and do
+
+```bash
+git clone https://github.com/Advestis/machine_learning_course
+```
+
+This will copy the content of this repository in a new directory called *machine_learning_course*. 
+
+You will need 
+ * to install PyCharm (look up the internet to find out how)
+ * to have Python 3.8 (same, look up the internet)
+ * to have pip installed for Python 3.8 (same, look up the internet)
+ * to make a working virtual environment : on Unix, open a terminal in the directory *
+cd machine_learning_course* and launch 
+   * `python3.8 -m pip install virtualenv`
+   * `python3.8 -m virtualenv venv`
+   This will create a virtual environment called *venv* in your current directory.
+ 
+Once the virtualenv is created, activate it. On Unix :
+
+```bash
+source venv/bin/activate
+```
+
+Then install the required python packages :
+
+```bash
+pip install -r requirements.txt
+```
+
+## Jupyter Lab
+
+Jupyter Lab is a web-based user interface for Python. It is perfect for writing small scripts that execute
+specific tasks or to test new ideas. It is not the tool to use to develop large software however, for it does
+not include an efficient debug tool, does not include PEP8 warning and automatic code completion or correction,
+and its files (notebooks, with the *.ipynb* extension) can not be executed directly in a command line.
+
+We will use it to introduce Python for data science, and experiment with sklearn and TensorFlow.
+
+## PyCharm
+
+PyCharm is the best IDE for developping in Python. It includes a lot of tools like debugging, automatic code completion,
+PEP8 corrections suggestions, has a builtin virtualenv management, supports git, and supports the installations of
+various plugins.
+
+We will use it to create our own linear regression algorithm from scratch.
