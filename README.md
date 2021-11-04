@@ -2,6 +2,7 @@
 
 ## Content 
 
+* First steps in Python (*first_steps.ipynb*)
 * Python for data science (*py_data_science.ipynb*)
 * Hand-made linear regression (*linreg/*)
 * Logistic regression with sklearn (*logreg.ipynb*)
@@ -52,6 +53,14 @@ not include an efficient debug tool, does not include PEP8 warning and automatic
 and its files (notebooks, with the *.ipynb* extension) can not be executed directly in a command line.
 
 We will use it to introduce Python for data science, and experiment with sklearn and TensorFlow.
+
+To open a Jupyter Lab notebook, open a terminal in the directory containing the notebook, source your venv and write 
+
+```bash
+jupyter lab
+```
+
+Then click on your notebook
 
 ## PyCharm
 
