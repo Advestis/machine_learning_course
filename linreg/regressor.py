@@ -19,16 +19,11 @@ class LinearRegressor:
 
     def fit(self):
         print(f"fitting...")
-        ss_xy = (self.y * self.x).sum() - self.x.sum() * self.y.sum() / self.n
-        ss_xx = (self.x * self.x).sum() - (self.x.sum() ** 2) / self.n
-        self.b = ss_xy / ss_xx
-        self.a = self.y.mean() - self.b * self.x.mean()
-
-        self.pred_y = self.a + self.b * self.x
-        rss = ((self.y - self.pred_y) ** 2).sum()
-        tss = ((self.y - self.y.mean()) ** 2).sum()
-        self.rsquared = 1 - (rss / tss)
-        print(f"...done. Results are : \n - a={self.a}\n - a={self.b}\n - r**2={self.rsquared}")
+        print("sum of y:", self.y.sum())
+        print("mean of y:", self.y.mean())
+        print("y divided by 2:", self.y / 2)
+        """ Code here """
+        # print(f"...done. Results are : \n - a={self.a}\n - a={self.b}\n - r**2={self.rsquared}")
 
     def plot(self, path: str = None):
         print(f"plotting...")
