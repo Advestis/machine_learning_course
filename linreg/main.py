@@ -10,10 +10,12 @@ if __name__ == '__main__':
     expected_stddev = 60
 
     regressor = LinearRegressor(x, y)
-    regressor.alpha = 0.00000005
     regressor.fit("analytic")
     regressor.plot("fit_result_analytic.pdf")
+    regressor.max_epoch = 4000
     regressor.expected_y_std = 60
     regressor.fit("numeric", theta=np.array([1., 1.]))
     regressor.plot("fit_result_numeric.pdf")
+    regressor.save_summary("fit_result_numeric_summary.csv")
     regressor.plot_summary("fit_result_numeric_summary.pdf")
+    regressor.animate("fit_animation.gif", real_a=10, real_b=-1000, step=100)

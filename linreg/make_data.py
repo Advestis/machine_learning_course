@@ -4,7 +4,7 @@ import pandas as pd
 if __name__ == '__main__':
     nsamples = 1000
     a = 10
-    b = -100
+    b = -1000
     xstart = -20
     xend = 300
     noise = 60
