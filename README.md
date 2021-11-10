@@ -14,7 +14,7 @@
 **Note** : the installation instructions here are valid for Unix systems (Linux and Mac). I do not use Windows so I do
 not know the equivalent commands on Windows. Look them up on the internet.
 
-First of all, install git (llok up the internet) then clone this repository on your computer (in your document for example, but that's up to you). To do that,
+First of all, install git (look up the internet) then clone this repository on your computer (in your document for example, but that's up to you). To do that,
 on Unix open a terminal and do
 
 ```bash
