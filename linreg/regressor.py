@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -33,8 +35,14 @@ class LinearRegressor:
         if len(x) != len(y):
             raise ValueError("x and y must have the same size")
 
+        if isinstance(x, (pd.DataFrame, pd.Series)):
+            x = x.values
+        if isinstance(y, (pd.DataFrame, pd.Series)):
+            y = y.values
         self.x = x
+        self.x_norm, self.xmean, self.xstd = normalise(self.x)
         self.y = y
+        self.y_norm, self.ymean, self.ystd = normalise(self.y)
         self.pred_y = None
         self.n = len(x)
         print(f"There are {self.n} observations")
@@ -45,15 +53,27 @@ class LinearRegressor:
         self.alpha = 0.001
         self.converged = None
         self.expected_y_std = None
-        self.loss_precicion_stop = None
+        self.stopping_criterion = None
         self.learning_summary = pd.DataFrame(columns=["loss", "a", "b", "ga", "gb"], dtype=float)
+        self.learning_summary_norm = pd.DataFrame(columns=["loss", "a", "b", "ga", "gb"], dtype=float)
         self.learning_summary.index.name = "epoch"
+
+    def convert_params(self, a, b, to="normalized"):
+        if to == "normalized":
+            aa = a * self.xstd / self.ystd
+            bb = (b - self.ymean) / self.ystd + aa * self.xmean / self.xstd
+        elif to == "real":
+            aa = a * self.ystd / self.xstd
+            bb = self.ymean + self.ystd * (b - self.xmean * a / self.xstd)
+        else:
+            raise ValueError(f"Invalid parameter '{to}' for 'normalized'")
+        return aa, bb
 
     def fit(self, method="analytic", **kwargs):
         if method == "analytic":
             self.fit_analytic()
         elif method == "numeric":
-            check_expected_kwargs(kwargs, ["theta"], allow_unexpected=False)
+            check_expected_kwargs(kwargs, ["theta", "normalize"], allow_unexpected=False)
             self.fit_numeric(**kwargs)
         else:
             raise ValueError(f"Invalid method '{method}'")
@@ -70,47 +90,51 @@ class LinearRegressor:
         self.b = self.y.mean() - self.a * self.x.mean()
         self._finish_learning()
 
-    def fit_numeric(self, theta=None):
+    def fit_numeric(self, theta=None, normalize: bool = True, to_show: str = None):
+        def one_fit(a_, b_, x_, y_):
+            y_model = a_ * x_ + b_
+            diffs = y_ - y_model
+            loss = np.sum(diffs ** 2) / (2 * self.n)
+            if np.isinf(loss) or np.isnan(loss):
+                raise ValueError("loss is invalid")
+            g_a = (-1 / self.n) * (x_ * diffs).sum()
+            g_b = (-1 / self.n) * diffs.sum()
+            return loss, g_a, g_b
+
         print(f"fitting...")
         """ Code here """
 
-        x_norm, xmean, xstd = normalise(self.x.values)
-        y_norm, ymean, ystd = normalise(self.y.values)
-
-        a = theta[0] * xstd / ystd
-        b = (theta[1] + a * xmean * ystd / xstd - ymean) / ystd
-
         i = 0
+        a_real, b_real = theta
+        a_norm, b_norm = self.convert_params(a_real, b_real, to="normalized")
 
-        # if self.expected_y_std is not None and self.loss_precicion_stop is None:
-        #     self.loss_precicion_stop = 1.1 * (self.expected_y_std - ymean) ** 2 * len(x) / (2 * len(x) * ystd)
-        if self.max_epoch is None and self.loss_precicion_stop is None:
+        if self.max_epoch is None and self.stopping_criterion is None:
             raise ValueError(
                 "At least one of max_iterations or loss_precicion_stop must be set for LinearRegressor if "
                 "using numeric fit."
             )
-        if self.loss_precicion_stop is not None:
-            self.converged = False
         while self.max_epoch is None or i < self.max_epoch:
             try:
-                i += 1
-                y_model = a * x_norm + b
-                diffs = y_norm - y_model
-                loss = np.sum(diffs ** 2) / (2 * self.n)
-                print(f"Epoch {i} | loss: {loss}")
-                if np.isinf(loss) or np.isnan(loss):
+                self.a = a_real
+                self.b = b_real
+                loss_real, g_a_real, g_b_real = one_fit(a_real, b_real, self.x, self.y)
+                loss_norm, g_a_norm, g_b_norm = one_fit(a_norm, b_norm, self.x_norm, self.y_norm)
+                print(f"  a (real, normalized): {self.a}, {a_norm} -- b (real, normalized): {self.b}, {b_norm}")
+                print(f"Epoch {i} | loss (real, normalized coordinates): {loss_real}, {loss_norm}")
+                if np.isinf(loss_real) or np.isnan(loss_real) or np.isinf(loss_norm) or np.isnan(loss_norm):
                     raise ValueError("loss is invalid")
-                g_a = (-1 / self.n) * (x_norm * diffs).sum()
-                g_b = (-1 / self.n) * diffs.sum()
-                a = a - self.alpha * g_a
-                b = b - self.alpha * g_b
-                self.a = a * ystd / xstd
-                self.b = ymean + b * ystd - xmean * a * ystd / xstd
-                print(f"  a: {self.a} -- b: {self.b}")
-                self._check_convergence(loss)
-                self.learning_summary.loc[i] = [loss, self.a, self.b, g_a, g_b]
+
+                self.learning_summary_norm.loc[i] = [loss_norm, a_norm, b_norm, g_a_norm, g_b_norm]
+                self.learning_summary.loc[i] = [loss_real, self.a, self.b, g_a_real, g_b_real]
+                self._check_convergence()
                 if self.converged:
                     break
+
+                i += 1
+                a_real = a_real - self.alpha * g_a_real
+                b_real = b_real - self.alpha * g_b_real
+                a_norm = a_norm - self.alpha * g_a_norm
+                b_norm = b_norm - self.alpha * g_b_norm
             except Exception as e:
                 print(f"Stopping the gradient descent because an error occured : {str(e)}")
                 break
@@ -123,11 +147,9 @@ class LinearRegressor:
         self.rsquared = compute_rsquared(self.y, self.pred_y)
         print(f"...done. Results are : \n - a={self.a}\n - b={self.b}\n - r**2={self.rsquared}")
 
-    def _check_convergence(self, loss):
-        if self.loss_precicion_stop is not None:
-            if loss < self.loss_precicion_stop:
-                self.converged = True
-                print("Learning converged")
+    def _check_convergence(self, *args):
+        """To implement"""
+        self.converged = False
 
     def plot(self, path: str = None):
         print(f"plotting...")
@@ -150,31 +172,35 @@ class LinearRegressor:
         else:
             return plt.gcf()
 
-    def plot_summary(self, path: str = None):
+    def plot_summary(self, path: str = None, which="real"):
         if self.learning_summary.empty:
             print("Learning summary is empty")
             return
+
+        if which == "real":
+            df = self.learning_summary
+        else:
+            df = self.learning_summary_norm
+
         fig, axis = plt.subplots(2, 2, figsize=(15, 9))
         fig.suptitle("Learning summary", fontsize=25)
 
-        axis[0][0].plot(self.learning_summary.index, self.learning_summary["loss"])
-        if self.loss_precicion_stop is not None:
-            axis[0][0].hlines(self.loss_precicion_stop, 0, self.learning_summary.index[-1], color="red")
+        axis[0][0].plot(df.index, df["loss"])
         axis[0][0].set_xlabel("epoch", fontsize=20)
         axis[0][0].set_ylabel("loss", fontsize=20)
 
-        axis[0][1].plot(self.learning_summary.index, self.learning_summary["ga"])
+        axis[0][1].plot(df.index, df["ga"])
         twinx = axis[0][1].twinx()
-        twinx.plot(self.learning_summary.index, self.learning_summary["gb"], color="red", ls="--")
+        twinx.plot(df.index, df["gb"], color="red", ls="--")
         axis[0][1].set_xlabel("epoch", fontsize=20)
         axis[0][1].set_ylabel("ga", fontsize=20)
         twinx.set_ylabel("gb", fontsize=20)
 
-        axis[1][0].plot(self.learning_summary.index, self.learning_summary["a"])
+        axis[1][0].plot(df.index, df["a"])
         axis[1][0].set_xlabel("epoch", fontsize=20)
         axis[1][0].set_ylabel("a", fontsize=20)
 
-        axis[1][1].plot(self.learning_summary.index, self.learning_summary["b"])
+        axis[1][1].plot(df.index, df["b"])
         axis[1][1].set_xlabel("epoch", fontsize=20)
         axis[1][1].set_ylabel("b", fontsize=20)
 
@@ -190,19 +216,22 @@ class LinearRegressor:
         else:
             return fig
 
-    def save_summary(self, path):
-        self.learning_summary.to_csv(path)
+    def save_summary(self, path, which="real"):
+        if which == "real":
+            self.learning_summary.to_csv(path)
+        else:
+            self.learning_summary_norm.to_csv(path)
 
-    def animate(self, path: str = None, real_a: float = None, real_b: float = None, step=20, nbins=1000):
+    def animate(self, path: str = None, correct_a: float = None, correct_b: float = None, step=20, nbins=100):
+        def get_loss(a_, b_, x_, y_):
+            ax = np.outer(a_, x_)
+            diff = np.array([ax - y_ + sb for sb in b_])
+            loss = np.sum(diff ** 2, axis=2) / (2 * self.n)
+            return loss
 
-        def force_aspect(ax, aspect):
-            im = ax.get_images()
-            extent = im[0].get_extent()
-            ax.set_aspect(abs((extent[1] - extent[0]) / (extent[3] - extent[2])) / aspect)
-
-        def make_range(which, real):
-            min_ = min(min(self.learning_summary[which]), real)
-            max_ = max(max(self.learning_summary[which]), real)
+        def make_range(real, col):
+            min_ = min(min(col), real)
+            max_ = max(max(col), real)
 
             dist_to_min = abs(real - min_)
             dist_to_max = abs(real - max_)
@@ -213,76 +242,137 @@ class LinearRegressor:
                 min_ = real - dist_to_max
             return [min_, max_]
 
-        if real_a is None:
-            real_a = self.a
-        if real_b is None:
-            real_b = self.b
+        if correct_a is None:
+            correct_a = self.a
+        if correct_b is None:
+            correct_b = self.b
 
-        a_range = make_range("a", real_a)
-        b_range = make_range("b", real_b)
+        correct_a_norm, correct_b_norm = self.convert_params(correct_a, correct_b, to="normalized")
 
-        gradient_map = pd.DataFrame(
-            index=pd.MultiIndex.from_product([np.linspace(*a_range, nbins), np.linspace(*b_range, nbins)]),
-            columns=self.x,
-        ).fillna(1)
-        slopes = gradient_map.index.get_level_values(0)
-        intercepts = gradient_map.index.get_level_values(1)
+        a_real = self.learning_summary.iloc[0]["a"]
+        b_real = self.learning_summary.iloc[0]["b"]
+        a_norm = self.learning_summary_norm.iloc[0]["a"]
+        b_norm = self.learning_summary_norm.iloc[0]["b"]
+        a_range_real = make_range(correct_a, self.learning_summary["a"])
+        b_range_real = make_range(correct_b, self.learning_summary["b"])
+        a_range_norm = make_range(correct_a_norm, self.learning_summary_norm["a"])
+        b_range_norm = make_range(correct_b_norm, self.learning_summary_norm["b"])
+        slopes_real = np.linspace(*a_range_real, nbins)
+        slopes_norm = np.linspace(*a_range_norm, nbins)
+        intercepts_real = np.linspace(*b_range_real, nbins)
+        intercepts_norm = np.linspace(*b_range_norm, nbins)
+        slopes_grid_real, intercepts_grid_real = np.meshgrid(slopes_real, intercepts_real)
+        slopes_grid_norm, intercepts_grid_norm = np.meshgrid(slopes_norm, intercepts_norm)
+        losses_real = get_loss(slopes_real, intercepts_real, self.x, self.y)
+        losses_norm = get_loss(slopes_norm, intercepts_norm, self.x_norm, self.y_norm)
 
-        gradient_map = gradient_map * gradient_map.columns
-        gradient_map = gradient_map.apply(lambda x: slopes * x + intercepts)
-        real_y = pd.Series(index=gradient_map.columns, data=real_a * gradient_map.columns + real_b)
-        gradient_map = (((gradient_map - real_y) ** 2).sum(axis=1) / (2 * self.n)).unstack()
+        fig = plt.figure(figsize=(15, 15))
+        axes = [
+            fig.add_subplot(2, 2, 1),
+            fig.add_subplot(2, 2, 2, projection="3d"),
+            fig.add_subplot(2, 2, 3),
+            fig.add_subplot(2, 2, 4, projection="3d"),
+        ]
 
-        fig, axes = plt.subplots(1, 2, figsize=(15, 7))
-        p = axes[0].scatter(self.x, self.y, color="blue", marker="o", s=10)
-        a = self.learning_summary.iloc[0]["a"]
-        b = self.learning_summary.iloc[0]["b"]
-        line = axes[0].plot(
+        p_real = axes[0].scatter(self.x, self.y, color="blue", marker="o", s=10)
+        axes[0].grid()
+        line_real = axes[0].plot(
             self.x,
-            a * self.x + b,
+            a_real * self.x + b_real,
             color="red",
         )[0]
-        tb = f" + {round(self.b, 3)}" if self.b > 0 else f"-{round(self.b, 3)}"
-        legend = plt.text(0.1, 0.95, f"Epoch 0: {round(self.a, 3)}x{tb}", transform=axes[0].transAxes)
-
-        colormap = axes[1].imshow(
-            gradient_map.values,
-            cmap="hot",
-            # interpolation="spline16",
-            extent=[gradient_map.index[0], gradient_map.index[-1], gradient_map.columns[0], gradient_map.columns[-1]],
-            aspect=1,
-            origin="lower"
-        )
-        fig.colorbar(colormap, ax=axes[1], location='right', shrink=0.8)
-        force_aspect(axes[1], aspect=1)
+        tb = f" + {round(b_real, 3)}" if b_real >= 0 else f"-{round(b_real, 3)}"
+        legend_real = axes[0].text(0.1, 0.95, f"Epoch 0: {round(a_real, 3)}x{tb}", transform=axes[0].transAxes)
         axes[0].set_xlabel("x")
         axes[0].set_ylabel("y")
+
+        p_norm = axes[2].scatter(self.x, self.y, color="blue", marker="o", s=10)
+        axes[2].grid()
+        line_norm = axes[2].plot(
+            self.x,
+            a_real * self.x + b_real,
+            color="red",
+        )[0]
+        tb = f" + {round(b_norm, 3)}" if b_norm >= 0 else f"-{round(b_norm, 3)}"
+        legend_norm = axes[2].text(0.1, 0.95, f"Epoch 0: {round(a_norm, 3)}x{tb}", transform=axes[2].transAxes)
+        axes[2].set_xlabel("x")
+        axes[2].set_ylabel("y")
+
+        axes[1].plot_surface(
+            slopes_grid_real, intercepts_grid_real, losses_real, alpha=0.5, antialiased=True, cmap="terrain"
+        )
         axes[1].set_xlabel("a")
         axes[1].set_ylabel("b")
+        axes[1].set_zlabel("loss")
         axes[1].scatter(
-            [self.learning_summary["a"].iloc[0]], [self.learning_summary["b"].iloc[0]], marker="x", color="cyan", s=10
+            [slopes_real[0]],
+            [intercepts_real[0]],
+            [losses_real[0][0]],
+            marker="x",
+            color="red",
+            s=10,
         )
-        plt.grid()
+
+        axes[3].plot_surface(
+            slopes_grid_norm, intercepts_grid_norm, losses_norm, alpha=0.5, antialiased=True, cmap="terrain"
+        )
+        axes[3].set_xlabel("a")
+        axes[3].set_ylabel("b")
+        axes[3].set_zlabel("loss")
+        axes[3].scatter(
+            [slopes_norm[0]],
+            [intercepts_norm[0]],
+            [losses_norm[0][0]],
+            marker="x",
+            color="red",
+            s=10,
+        )
 
         def update(i):
             print(f"Animating {i}...")
-            a_ = self.learning_summary.loc[i, "a"]
-            b_ = self.learning_summary.loc[i, "b"]
-            y = a_ * self.x + b_
-            line.set_ydata(y)
-            tb_ = f" + {round(b_, 3)}" if b_ > 0 else f"-{round(b_, 3)}"
-            legend.set_text(f"Epoch {i}: {round(a_, 3)}x{tb_}")
+            a_real_ = self.learning_summary.loc[i, "a"]
+            b_real_ = self.learning_summary.loc[i, "b"]
+            a_norm_ = self.learning_summary_norm.loc[i, "a"]
+            b_norm_ = self.learning_summary_norm.loc[i, "b"]
+            pred_real = a_real_ * self.x + b_real_
+            pred_norm = a_norm_ * self.x_norm + b_norm_
+            a_norm_real, b_norm_real = self.convert_params(a_norm_, b_norm_, to="real")
+            pred_norm_real = a_norm_real * self.x + b_norm_real
+            line_real.set_ydata(pred_real)
+            line_norm.set_ydata(pred_norm_real)
+            tb_ = f" + {round(b_real_, 3)}" if b_real_ > 0 else f"-{round(b_real_, 3)}"
+            legend_real.set_text(f"Epoch {i}: {round(a_real_, 3)}x{tb_}")
+            tb_ = f" + {round(b_norm_real, 3)}" if b_norm_real > 0 else f"-{round(b_norm_real, 3)}"
+            legend_norm.set_text(f"Epoch {i}: {round(a_norm_real, 3)}x{tb_}")
+
+            loss_real = ((pred_real - self.y) ** 2).sum() / (2 * self.n)
+            loss_norm = ((pred_norm - self.y_norm) ** 2).sum() / (2 * self.n)
+
             axes[1].scatter(
-                [self.learning_summary["a"].iloc[i]], [self.learning_summary["b"].iloc[i]], marker="x", color="cyan",
-                s=10
+                [a_real_],
+                [b_real_],
+                [loss_real],
+                marker="x",
+                color="red",
+                s=10,
             )
-            return p, line, legend
+
+            axes[3].scatter(
+                [a_norm_],
+                [b_norm_],
+                [loss_norm],
+                marker="x",
+                color="red",
+                s=10,
+            )
+            return p_real, p_norm, line_real, line_norm, legend_real, legend_norm
 
         # noinspection PyTypeChecker
         ani = animation.FuncAnimation(fig, update, blit=True, frames=self.learning_summary.index[1::step])
+        plt.title("Top : Real coordinates. Bottom : normalized coordinates.")
 
         if path is not None:
-            ani.save(path, fps=60)
+            ani.save(path, fps=20, dpi=300)
             print(f"...animation saved in {path}")
             plt.close("all")  # Without this command, all future plots will be made in the same figure
         else:

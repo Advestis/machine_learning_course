@@ -9,13 +9,19 @@ if __name__ == '__main__':
 
     expected_stddev = 60
 
+    normalize = True
+    step = 20
+    nbins = 20
+
     regressor = LinearRegressor(x, y)
     regressor.fit("analytic")
     regressor.plot("fit_result_analytic.pdf")
     regressor.max_epoch = 4000
     regressor.expected_y_std = 60
-    regressor.fit("numeric", theta=np.array([1., 1.]))
+    regressor.fit("numeric", theta=np.array([1., 1.]), normalize=normalize)
     regressor.plot("fit_result_numeric.pdf")
     regressor.save_summary("fit_result_numeric_summary.csv")
+    regressor.save_summary("fit_result_numeric_summary_normalized.csv", "normalized")
     regressor.plot_summary("fit_result_numeric_summary.pdf")
-    regressor.animate("fit_animation.gif", real_a=10, real_b=-1000, step=100)
+    regressor.plot_summary("fit_result_numeric_summary_normalized.pdf", "normalized")
+    regressor.animate("fit_animation.gif", step=step, nbins=nbins)

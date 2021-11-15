@@ -129,5 +129,5 @@ dmypy.json
 .pyre/
 .idea
 /linreg/*.pdf
-/linreg/*.csv
+/linreg/*.csv*
 /linreg/*.gif
