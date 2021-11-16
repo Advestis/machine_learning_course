@@ -1,5 +1,3 @@
-from pathlib import Path
-
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -73,7 +71,7 @@ class LinearRegressor:
         if method == "analytic":
             self.fit_analytic()
         elif method == "numeric":
-            check_expected_kwargs(kwargs, ["theta", "normalize"], allow_unexpected=False)
+            check_expected_kwargs(kwargs, ["theta"], allow_unexpected=False)
             self.fit_numeric(**kwargs)
         else:
             raise ValueError(f"Invalid method '{method}'")
@@ -90,7 +88,7 @@ class LinearRegressor:
         self.b = self.y.mean() - self.a * self.x.mean()
         self._finish_learning()
 
-    def fit_numeric(self, theta=None, normalize: bool = True, to_show: str = None):
+    def fit_numeric(self, theta=None):
         def one_fit(a_, b_, x_, y_):
             y_model = a_ * x_ + b_
             diffs = y_ - y_model
@@ -253,6 +251,12 @@ class LinearRegressor:
         b_real = self.learning_summary.iloc[0]["b"]
         a_norm = self.learning_summary_norm.iloc[0]["a"]
         b_norm = self.learning_summary_norm.iloc[0]["b"]
+
+        # g_a_real = self.learning_summary.loc[0, "ga"]
+        # g_b_real = self.learning_summary.loc[0, "gb"]
+        # g_a_norm = self.learning_summary_norm.loc[0, "ga"]
+        # g_b_norm = self.learning_summary_norm.loc[0, "gb"]
+
         a_range_real = make_range(correct_a, self.learning_summary["a"])
         b_range_real = make_range(correct_b, self.learning_summary["b"])
         a_range_norm = make_range(correct_a_norm, self.learning_summary_norm["a"])
@@ -316,9 +320,9 @@ class LinearRegressor:
         axes[3].plot_surface(
             slopes_grid_norm, intercepts_grid_norm, losses_norm, alpha=0.5, antialiased=True, cmap="terrain"
         )
-        axes[3].set_xlabel("a")
-        axes[3].set_ylabel("b")
-        axes[3].set_zlabel("loss")
+        axes[3].set_xlabel("a_N")
+        axes[3].set_ylabel("b_N")
+        axes[3].set_zlabel("loss_N")
         axes[3].scatter(
             [slopes_norm[0]],
             [intercepts_norm[0]],
@@ -334,8 +338,13 @@ class LinearRegressor:
             b_real_ = self.learning_summary.loc[i, "b"]
             a_norm_ = self.learning_summary_norm.loc[i, "a"]
             b_norm_ = self.learning_summary_norm.loc[i, "b"]
+
+            # g_a_real_ = self.learning_summary.loc[i, "ga"]
+            # g_b_real_ = self.learning_summary.loc[i, "gb"]
+            # g_a_norm_ = self.learning_summary_norm.loc[i, "ga"]
+            # g_b_norm_ = self.learning_summary_norm.loc[i, "gb"]
+
             pred_real = a_real_ * self.x + b_real_
-            pred_norm = a_norm_ * self.x_norm + b_norm_
             a_norm_real, b_norm_real = self.convert_params(a_norm_, b_norm_, to="real")
             pred_norm_real = a_norm_real * self.x + b_norm_real
             line_real.set_ydata(pred_real)
@@ -345,8 +354,18 @@ class LinearRegressor:
             tb_ = f" + {round(b_norm_real, 3)}" if b_norm_real > 0 else f"-{round(b_norm_real, 3)}"
             legend_norm.set_text(f"Epoch {i}: {round(a_norm_real, 3)}x{tb_}")
 
-            loss_real = ((pred_real - self.y) ** 2).sum() / (2 * self.n)
-            loss_norm = ((pred_norm - self.y_norm) ** 2).sum() / (2 * self.n)
+            loss_real = self.learning_summary.loc[i, "loss"]
+            loss_norm = self.learning_summary_norm.loc[i, "loss"]
+
+            # loss_plus_nabla_real = get_loss(
+            #     [a_real_ + self.alpha * g_b_real_], [b_real_ - self.alpha * g_a_real_], self.x, self.y
+            # )
+            # loss_plus_nabla_norm = get_loss(
+            #     [a_norm_ + self.alpha * g_b_norm_], [b_norm_ - self.alpha * g_a_norm_], self.x_norm, self.y_norm
+            # )
+            #
+            # print("real:", loss_plus_nabla_real, self.learning_summary.loc[i, "loss"])
+            # print("norm:", loss_plus_nabla_norm, self.learning_summary_norm.loc[i, "loss"])
 
             axes[1].scatter(
                 [a_real_],

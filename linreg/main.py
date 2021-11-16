@@ -9,16 +9,15 @@ if __name__ == '__main__':
 
     expected_stddev = 60
 
-    normalize = True
-    step = 20
+    step = 100
     nbins = 20
 
     regressor = LinearRegressor(x, y)
     regressor.fit("analytic")
     regressor.plot("fit_result_analytic.pdf")
     regressor.max_epoch = 4000
-    regressor.expected_y_std = 60
-    regressor.fit("numeric", theta=np.array([1., 1.]), normalize=normalize)
+
+    regressor.fit("numeric", theta=np.array([1., 1.]))
     regressor.plot("fit_result_numeric.pdf")
     regressor.save_summary("fit_result_numeric_summary.csv")
     regressor.save_summary("fit_result_numeric_summary_normalized.csv", "normalized")

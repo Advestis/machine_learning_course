@@ -7,7 +7,7 @@ if __name__ == '__main__':
     b = 15
     xstart = -10
     xend = 10
-    noise = 3
+    noise = 15
     x = np.linspace(xstart, xend, nsamples)
     y = a * x + b + np.random.normal(0, noise, nsamples)
     df = pd.DataFrame(columns=["x", "y"], data=np.array([x, y]).T)
