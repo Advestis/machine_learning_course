@@ -131,3 +131,4 @@ dmypy.json
 /**/*.pdf
 /**/*.csv*
 /**/*.gif
+/**/*.png
