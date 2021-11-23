@@ -69,3 +69,15 @@ PEP8 corrections suggestions, has a builtin virtualenv management, supports git,
 various plugins.
 
 We will use it to create our own linear regression algorithm from scratch.
+
+## TensorBoard
+
+```bash
+tensorboard --logdir nn_numpy/logs/fit/
+```
+
+
+## Resources
+
+* All useful Python tutorials : https://www.w3schools.com/python/default.asp
+* Neural network in numpy : https://towardsdatascience.com/lets-code-a-neural-network-in-plain-numpy-ae7e74410795

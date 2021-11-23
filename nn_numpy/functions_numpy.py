@@ -90,7 +90,8 @@ def full_forward_propagation(x, params_values, nn_architecture):
     return a_curr, memory
 
 
-def get_cost_value(y_hat, y):
+def bce_loss(y_hat, y):
+    """ Binary crossentropy """
     # number of examples
     m = y_hat.shape[1]
     # calculation of the cost according to the formula
@@ -178,7 +179,7 @@ def update(params_values, grads_values, nn_architecture, learning_rate):
     return params_values
 
 
-def train(x, y, nn_architecture, epochs, learning_rate, verbose=False, callback=None):
+def train(x, y, nn_architecture, epochs, learning_rate, verbose=False, callback=None, which=None):
     # initiation of neural net parameters
     params_values = init_layers(nn_architecture, 2)
     # initiation of lists storing the history
@@ -192,7 +193,7 @@ def train(x, y, nn_architecture, epochs, learning_rate, verbose=False, callback=
         y_hat, cache = full_forward_propagation(x, params_values, nn_architecture)
 
         # calculating metrics and saving them in history
-        cost = get_cost_value(y_hat, y)
+        cost = bce_loss(y_hat, y)
         cost_history.append(cost)
         accuracy = get_accuracy_value(y_hat, y)
         accuracy_history.append(accuracy)
@@ -206,7 +207,7 @@ def train(x, y, nn_architecture, epochs, learning_rate, verbose=False, callback=
             if verbose:
                 print("Iteration: {:05} - cost: {:.5f} - accuracy: {:.5f}".format(i, cost, accuracy))
             if callback is not None:
-                callback(i, params_values)
+                callback(i, params_values, which)
 
     return params_values
 
