@@ -189,7 +189,7 @@ def train(x, y, nn_architecture, epochs, learning_rate, verbose=False, callback=
     # performing calculations for subsequent iterations
     for i in range(epochs):
         # step forward
-        y_hat, cashe = full_forward_propagation(x, params_values, nn_architecture)
+        y_hat, cache = full_forward_propagation(x, params_values, nn_architecture)
 
         # calculating metrics and saving them in history
         cost = get_cost_value(y_hat, y)
@@ -198,7 +198,7 @@ def train(x, y, nn_architecture, epochs, learning_rate, verbose=False, callback=
         accuracy_history.append(accuracy)
 
         # step backward - calculating gradient
-        grads_values = full_backward_propagation(y_hat, y, cashe, params_values, nn_architecture)
+        grads_values = full_backward_propagation(y_hat, y, cache, params_values, nn_architecture)
         # updating model state
         params_values = update(params_values, grads_values, nn_architecture, learning_rate)
 

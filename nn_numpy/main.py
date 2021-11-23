@@ -6,9 +6,9 @@ from sklearn.model_selection import train_test_split
 from functions import make_plot, train, full_forward_propagation, get_accuracy_value
 
 
-# 5 Layer network. First layer takes two entries : x and y coordinates. The output layer has one output, that is
-# activated by a sigmoid, and can thus take the value 0 or 1, corresponding to one or the other classification
-# possibilities
+# 5 Layer network. First layer takes two entries : x (pairs of coordinates) and y (a vector of 0 and 1). The output
+# layer has one output, that is activated by a sigmoid, and can thus take the value 0 or 1, corresponding to one or the
+# other classification possibilities
 NN_ARCHITECTURE = [
     {"input_dim": 2, "output_dim": 25, "activation": "relu"},
     {"input_dim": 25, "output_dim": 50, "activation": "relu"},
