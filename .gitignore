@@ -132,4 +132,4 @@ dmypy.json
 /**/*.csv*
 /**/*.gif
 /**/*.png
-/nn_numpy/logs/
+/neural_network/logs/

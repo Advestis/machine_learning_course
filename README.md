@@ -2,12 +2,11 @@
 
 ## Content 
 
-* First steps in Python (*first_steps.ipynb*)
-* Python for data science (*py_data_science.ipynb*)
+* First steps in Python (*first_steps.ipynb* and *first_steps_exercise.ipynb*)
+* Python for data science (*py_data_science.ipynb* and *py_data_science_exercise(_2).ipynb*)
 * Hand-made linear regression (*linreg/*)
-* Logistic regression with sklearn (*logreg.ipynb*)
-* Neural Network with NumPy (*rn_numpy.ipynb*)
-* Neural Network with TensorFlow (*rn_tf.ipynb*)
+* Logistic regression with sklearn (*logistic_regression.ipynb*)
+* Neural Network with NumPy and Tensorflow (*neural_network*)
 
 ## Installation
 
@@ -73,7 +72,7 @@ We will use it to create our own linear regression algorithm from scratch.
 ## TensorBoard
 
 ```bash
-tensorboard --logdir nn_numpy/logs/fit/
+tensorboard --logdir neural_network/logs/fit/
 ```
 
 
