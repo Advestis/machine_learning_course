@@ -33,13 +33,13 @@ def relu(z):
     return np.maximum(0, z)
 
 
-def sigmoid_backward(da, z):
+def sigmoid_backward(dh, z):
     sig = sigmoid(z)
-    return da * sig * (1 - sig)
+    return dh * sig * (1 - sig)  # dLoss/dh * dh/dz
 
 
-def relu_backward(da, z):
-    dx = np.array(da, copy=True)
+def relu_backward(dh, z):
+    dx = np.array(dh, copy=True)
     dx[z <= 0] = 0
     return dx
 
@@ -83,7 +83,7 @@ def full_forward_propagation(x, params_values, nn_architecture):
         a_curr, z_curr = single_layer_forward_propagation(a_prev, w_curr, b_curr, activ_function_curr)
 
         # saving calculated values in the memory
-        memory[f"A{idx}"] = a_prev
+        memory[f"h{idx}"] = a_prev
         memory[f"Z{layer_idx}"] = z_curr
 
     # return of prediction vector and a dictionary containing intermediate values
@@ -93,9 +93,9 @@ def full_forward_propagation(x, params_values, nn_architecture):
 def bce_loss(y_hat, y):
     """ Binary crossentropy """
     # number of examples
-    m = y_hat.shape[1]
-    # calculation of the cost according to the formula
-    cost = -1 / m * (np.dot(y, np.log(y_hat).T) + np.dot(1 - y, np.log(1 - y_hat).T))
+    n = y_hat.shape[1]
+    # calculation of the cost according to the formula (NOT the same than in the slides)
+    cost = -1 / n * (np.dot(y, np.log(y_hat).T) + np.dot(1 - y, np.log(1 - y_hat).T))
     return np.squeeze(cost)
 
 
@@ -112,9 +112,9 @@ def get_accuracy_value(Y_hat, Y):
     return (Y_hat_ == Y).all(axis=0).mean()
 
 
-def single_layer_backward_propagation(da_curr, w_curr, z_curr, a_prev, activation="relu"):
+def single_layer_backward_propagation(dh_curr, w_curr, z_curr, h_prev, activation="relu"):
     # number of examples
-    m = a_prev.shape[1]
+    n = h_prev.shape[1]
 
     # selection of activation function
     if activation == "relu":
@@ -125,16 +125,16 @@ def single_layer_backward_propagation(da_curr, w_curr, z_curr, a_prev, activatio
         raise Exception("Non-supported activation function")
 
     # calculation of the activation function derivative
-    dz_curr = backward_activation_func(da_curr, z_curr)
+    dz_curr = backward_activation_func(dh_curr, z_curr)
 
     # derivative of the matrix W
-    dw_curr = np.dot(dz_curr, a_prev.T) / m
+    dw_curr = np.dot(dz_curr, h_prev.T) / n
     # derivative of the vector b
-    db_curr = np.sum(dz_curr, axis=1, keepdims=True) / m
-    # derivative of the matrix A_prev
-    da_prev = np.dot(w_curr.T, dz_curr)
+    db_curr = np.sum(dz_curr, axis=1, keepdims=True) / n
+    # derivative of the matrix h_prev
+    dh_prev = np.dot(w_curr.T, dz_curr)
 
-    return da_prev, dw_curr, db_curr
+    return dh_prev, dw_curr, db_curr
 
 
 def full_backward_propagation(y_hat, y, memory, params_values, nn_architecture):
@@ -143,8 +143,9 @@ def full_backward_propagation(y_hat, y, memory, params_values, nn_architecture):
     # a hack ensuring the same shape of the prediction vector and labels vector
     y = y.reshape(y_hat.shape)
 
-    # initiation of gradient descent algorithm
-    da_prev = -(np.divide(y, y_hat) - np.divide(1 - y, 1 - y_hat))
+    # Initiation of gradient descent algorithm (derivate of the BCE against y_hat (h of last layer))
+    # NOT the same than the slides, because not the same loss
+    dh_prev = -(np.divide(y, y_hat) - np.divide(1 - y, 1 - y_hat))
 
     for layer_idx_prev, layer in reversed(list(enumerate(nn_architecture))):
         # we number network layers from 1
@@ -152,15 +153,15 @@ def full_backward_propagation(y_hat, y, memory, params_values, nn_architecture):
         # extraction of the activation function for the current layer
         activ_function_curr = layer["activation"]
 
-        da_curr = da_prev
+        dh_curr = dh_prev
 
-        a_prev = memory[f"A{layer_idx_prev}"]
+        h_m1 = memory[f"h{layer_idx_prev}"]  # Derivate of h(layer_idx_prev-1)*W(layer_idx_prev) by W(layer_idx_prev)
         z_curr = memory[f"Z{layer_idx_curr}"]
 
         w_curr = params_values[f"W{layer_idx_curr}"]
 
-        da_prev, dw_curr, db_curr = single_layer_backward_propagation(
-            da_curr, w_curr, z_curr, a_prev, activ_function_curr
+        dh_prev, dw_curr, db_curr = single_layer_backward_propagation(
+            dh_curr, w_curr, z_curr, h_m1, activ_function_curr
         )
 
         grads_values[f"dW{layer_idx_curr}"] = dw_curr
@@ -206,7 +207,7 @@ def train(x, y, nn_architecture, epochs, learning_rate, verbose=False, callback=
         if i % 50 == 0:
             if verbose:
                 print("Iteration: {:05} - cost: {:.5f} - accuracy: {:.5f}".format(i, cost, accuracy))
-            if callback is not None:
+            if callback is not None:  # For graph
                 callback(i, params_values, which)
 
     return params_values

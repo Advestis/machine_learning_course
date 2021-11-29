@@ -60,9 +60,10 @@ GRID_X_START = -1.5
 GRID_X_END = 2.5
 GRID_Y_START = -1.0
 GRID_Y_END = 2
-# output directory (the folder must be created on the drive)
+# output directory (the folder must exist on the drive)
 OUTPUT_DIR = "./"
 
+# Graph grid
 grid = np.mgrid[GRID_X_START:GRID_X_END:100j, GRID_X_START:GRID_Y_END:100j]
 grid_2d = grid.reshape(2, -1).T
 XX, YY = grid
@@ -93,7 +94,7 @@ def use_numpy():
     acc_test = get_accuracy_value(y_test_hat, np.transpose(y_test.reshape((y_test.shape[0], 1))))
     print("Test set accuracy: {:.2f}".format(acc_test))
 
-    # Training
+    # Training again, just to produce the graph
     params_values = train(
         x=np.transpose(x_train),
         y=np.transpose(y_train.reshape((y_train.shape[0], 1))),
