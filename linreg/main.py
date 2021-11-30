@@ -16,11 +16,11 @@ if __name__ == '__main__':
     regressor.fit("analytic")
     regressor.plot("fit_result_analytic.pdf")
     regressor.max_epoch = 4000
-    #
-    # regressor.fit("numeric", theta=np.array([1., 1.]))
-    # regressor.plot("fit_result_numeric.pdf")
-    # regressor.save_summary("fit_result_numeric_summary.csv")
-    # regressor.save_summary("fit_result_numeric_summary_normalized.csv", "normalized")
-    # regressor.plot_summary("fit_result_numeric_summary.pdf")
-    # regressor.plot_summary("fit_result_numeric_summary_normalized.pdf", "normalized")
-    # regressor.animate("fit_animation.gif", step=step, nbins=nbins)
+
+    regressor.fit("numeric", theta=np.array([1., 1.]))
+    regressor.plot("fit_result_numeric.pdf")
+    regressor.save_summary("fit_result_numeric_summary.csv")
+    regressor.save_summary("fit_result_numeric_summary_normalized.csv", "normalized")
+    regressor.plot_summary("fit_result_numeric_summary.pdf")
+    regressor.plot_summary("fit_result_numeric_summary_normalized.pdf", "normalized")
+    regressor.animate("fit_animation.gif", step=step, nbins=nbins)
