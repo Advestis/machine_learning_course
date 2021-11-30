@@ -48,8 +48,7 @@ class LinearRegressor:
         self.a = None
         self.b = None
         self.max_epoch = 1e4
-        self.alpha = 0.001
-        self.converged = None
+        self.learning_rate = 0.001
         self.expected_y_std = None
         self.stopping_criterion = None
         self.learning_summary = pd.DataFrame(columns=["loss", "a", "b", "ga", "gb"], dtype=float)
@@ -106,11 +105,8 @@ class LinearRegressor:
         a_real, b_real = theta
         a_norm, b_norm = self.convert_params(a_real, b_real, to="normalized")
 
-        if self.max_epoch is None and self.stopping_criterion is None:
-            raise ValueError(
-                "At least one of max_iterations or loss_precicion_stop must be set for LinearRegressor if "
-                "using numeric fit."
-            )
+        if self.max_epoch is None:
+            raise ValueError("max_epoch can not be None")
         while self.max_epoch is None or i < self.max_epoch:
             try:
                 self.a = a_real
@@ -124,30 +120,21 @@ class LinearRegressor:
 
                 self.learning_summary_norm.loc[i] = [loss_norm, a_norm, b_norm, g_a_norm, g_b_norm]
                 self.learning_summary.loc[i] = [loss_real, self.a, self.b, g_a_real, g_b_real]
-                self._check_convergence()
-                if self.converged:
-                    break
 
                 i += 1
-                a_real = a_real - self.alpha * g_a_real
-                b_real = b_real - self.alpha * g_b_real
-                a_norm = a_norm - self.alpha * g_a_norm
-                b_norm = b_norm - self.alpha * g_b_norm
+                a_real = a_real - self.learning_rate * g_a_real
+                b_real = b_real - self.learning_rate * g_b_real
+                a_norm = a_norm - self.learning_rate * g_a_norm
+                b_norm = b_norm - self.learning_rate * g_b_norm
             except Exception as e:
                 print(f"Stopping the gradient descent because an error occured : {str(e)}")
                 break
-        if not self.converged:
-            print("The learning did not converge")
         self._finish_learning()
 
     def _finish_learning(self):
         self.pred_y = self.b + self.a * self.x
         self.rsquared = compute_rsquared(self.y, self.pred_y)
         print(f"...done. Results are : \n - a={self.a}\n - b={self.b}\n - r**2={self.rsquared}")
-
-    def _check_convergence(self, *args):
-        """To implement"""
-        self.converged = False
 
     def plot(self, path: str = None):
         print(f"plotting...")
@@ -252,11 +239,6 @@ class LinearRegressor:
         a_norm = self.learning_summary_norm.iloc[0]["a"]
         b_norm = self.learning_summary_norm.iloc[0]["b"]
 
-        # g_a_real = self.learning_summary.loc[0, "ga"]
-        # g_b_real = self.learning_summary.loc[0, "gb"]
-        # g_a_norm = self.learning_summary_norm.loc[0, "ga"]
-        # g_b_norm = self.learning_summary_norm.loc[0, "gb"]
-
         a_range_real = make_range(correct_a, self.learning_summary["a"])
         b_range_real = make_range(correct_b, self.learning_summary["b"])
         a_range_norm = make_range(correct_a_norm, self.learning_summary_norm["a"])
@@ -339,11 +321,6 @@ class LinearRegressor:
             a_norm_ = self.learning_summary_norm.loc[i, "a"]
             b_norm_ = self.learning_summary_norm.loc[i, "b"]
 
-            # g_a_real_ = self.learning_summary.loc[i, "ga"]
-            # g_b_real_ = self.learning_summary.loc[i, "gb"]
-            # g_a_norm_ = self.learning_summary_norm.loc[i, "ga"]
-            # g_b_norm_ = self.learning_summary_norm.loc[i, "gb"]
-
             pred_real = a_real_ * self.x + b_real_
             a_norm_real, b_norm_real = self.convert_params(a_norm_, b_norm_, to="real")
             pred_norm_real = a_norm_real * self.x + b_norm_real
@@ -356,16 +333,6 @@ class LinearRegressor:
 
             loss_real = self.learning_summary.loc[i, "loss"]
             loss_norm = self.learning_summary_norm.loc[i, "loss"]
-
-            # loss_plus_nabla_real = get_loss(
-            #     [a_real_ + self.alpha * g_b_real_], [b_real_ - self.alpha * g_a_real_], self.x, self.y
-            # )
-            # loss_plus_nabla_norm = get_loss(
-            #     [a_norm_ + self.alpha * g_b_norm_], [b_norm_ - self.alpha * g_a_norm_], self.x_norm, self.y_norm
-            # )
-            #
-            # print("real:", loss_plus_nabla_real, self.learning_summary.loc[i, "loss"])
-            # print("norm:", loss_plus_nabla_norm, self.learning_summary_norm.loc[i, "loss"])
 
             axes[1].scatter(
                 [a_real_],
