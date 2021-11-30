@@ -61,6 +61,7 @@ class LinearRegressor:
 
     def fit_numeric(self, theta=None):
         def one_fit(a_, b_, x_, y_):
+            """ Code here """
             y_model =
             diffs =
             loss =
@@ -71,7 +72,6 @@ class LinearRegressor:
             return loss, g_a, g_b
 
         print(f"fitting...")
-        """ Code here """
 
         i = 0
         a, b = theta
@@ -80,6 +80,7 @@ class LinearRegressor:
             raise ValueError("max_epoch can not be None")
         while self.max_epoch is None or i < self.max_epoch:
             try:
+                """ Code here """
                 self.a =
                 self.b =
                 loss, g_a, g_b =
@@ -89,6 +90,7 @@ class LinearRegressor:
                     raise ValueError("loss is invalid")
 
                 self.learning_summary.loc[i] = [loss, self.a, self.b, g_a, g_b]
+                """ Code here """
                 i =
                 a =
                 b =
