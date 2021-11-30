@@ -77,14 +77,14 @@ class LinearRegressor:
 
     def fit_analytic(self):
         print(f"fitting...")
-        print("sum of y:", self.y.sum())
-        print("mean of y:", self.y.mean())
-        print("y divided by 2:", self.y / 2)
-        """ Code here """
-        ss_xy = (self.y * self.x).sum() - self.x.sum() * self.y.sum() / self.n
-        ss_xx = (self.x * self.x).sum() - (self.x.sum() ** 2) / self.n
-        self.a = ss_xy / ss_xx
-        self.b = self.y.mean() - self.a * self.x.mean()
+        x = self.x.reshape(1, self.n)
+        ones = np.ones(shape=x.shape)
+        x_t = np.concatenate((ones, x))
+        x = x_t.T
+        y = self.y.reshape(self.n, 1)
+        self.b, self.a = np.linalg.inv(x_t @ x) @ x_t @ y
+        self.b = self.b[0]
+        self.a = self.a[0]
         self._finish_learning()
 
     def fit_numeric(self, theta=None):
