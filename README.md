@@ -80,3 +80,4 @@ tensorboard --logdir neural_network/logs/fit/
 
 * All useful Python tutorials : https://www.w3schools.com/python/default.asp
 * Neural network in numpy : https://towardsdatascience.com/lets-code-a-neural-network-in-plain-numpy-ae7e74410795
+* slides from theoretical course useful for the exercises : https://www.overleaf.com/read/nfprtjqgvzyc
