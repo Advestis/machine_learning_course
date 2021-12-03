@@ -38,7 +38,7 @@ def callback_numpy_plot(index, params, which="numpy"):
     file_path = os.path.join(OUTPUT_DIR, file_name)
     prediction_probs, _ = full_forward_propagation(np.transpose(grid_2d), params, NN_ARCHITECTURE)
     prediction_probs = prediction_probs.reshape(prediction_probs.shape[1], 1)
-    make_plot(x_test, y_test, plot_title, file_name=file_path, XX=XX, YY=YY, preds=prediction_probs)
+    make_plot(x_test, y_test, plot_title, file_name=file_path, xx=XX, yy=YY, preds=prediction_probs)
 
 
 NN_ARCHITECTURE = [
@@ -113,7 +113,7 @@ def use_numpy():
 
     prediction_probs_numpy, _ = full_forward_propagation(np.transpose(grid_2d), params_values, NN_ARCHITECTURE)
     prediction_probs_numpy = prediction_probs_numpy.reshape(prediction_probs_numpy.shape[1], 1)
-    make_plot(x_test, y_test, "NumPy Model", file_name=None, XX=XX, YY=YY, preds=prediction_probs_numpy)
+    make_plot(x_test, y_test, "NumPy Model", file_name=None, xx=XX, yy=YY, preds=prediction_probs_numpy)
 
 
 def use_tensorflow():
