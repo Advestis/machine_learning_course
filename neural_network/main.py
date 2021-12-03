@@ -1,5 +1,10 @@
-import numpy as np
 import os
+os.environ["OMP_NUM_THREADS"] = "1"
+os.environ["OPENBLAS_NUM_THREADS"] = "1"
+os.environ["MKL_NUM_THREADS"] = "1"
+os.environ["VECLIB_MAXIMUM_THREADS"] = "1"
+os.environ["NUMEXPR_NUM_THREADS"] = "1"
+import numpy as np
 from sklearn.datasets import make_moons
 from sklearn.model_selection import train_test_split
 
