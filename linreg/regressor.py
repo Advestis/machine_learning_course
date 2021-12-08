@@ -37,7 +37,7 @@ class LinearRegressor:
         self.rsquared = None
         self.a = None
         self.b = None
-        self.max_epoch = 1e4
+        self.max_epoch = int(1e4)
         self.learning_rate = 0.001
         self.converged = None
         self.expected_y_std = None
@@ -73,12 +73,11 @@ class LinearRegressor:
 
         print(f"fitting...")
 
-        i = 0
         a, b = theta
 
         if self.max_epoch is None:
             raise ValueError("max_epoch can not be None")
-        while self.max_epoch is None or i < self.max_epoch:
+        for i in range(self.max_epoch):
             try:
                 """ Code here """
                 self.a =
