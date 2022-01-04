@@ -5,7 +5,7 @@ os.environ["MKL_NUM_THREADS"] = "1"
 os.environ["VECLIB_MAXIMUM_THREADS"] = "1"
 os.environ["NUMEXPR_NUM_THREADS"] = "1"
 import numpy as np
-from sklearn.datasets import make_moons
+from sklearn.datasets import make_circles
 from sklearn.model_selection import train_test_split
 
 from functions_numpy import make_plot, train, full_forward_propagation, get_accuracy_value
@@ -36,17 +36,14 @@ def callback_numpy_plot(index, params, which="numpy"):
         file_name = "tensorflow_{:05}.png".format(index // 50)
 
     file_path = os.path.join(OUTPUT_DIR, file_name)
-    prediction_probs, _ = full_forward_propagation(np.transpose(grid_2d), params, NN_ARCHITECTURE)
+    grid_2d_augmented = np.hstack([grid_2d, grid_2d**2])
+    prediction_probs, _ = full_forward_propagation(np.transpose(grid_2d_augmented), params, NN_ARCHITECTURE)
     prediction_probs = prediction_probs.reshape(prediction_probs.shape[1], 1)
-    make_plot(x_test, y_test, plot_title, file_name=file_path, xx=XX, yy=YY, preds=prediction_probs)
+    make_plot(x_test[:, :2], y_test, plot_title, file_name=file_path, xx=XX, yy=YY, preds=prediction_probs)
 
 
 NN_ARCHITECTURE = [
-    {"input_dim": 2, "output_dim": 25, "activation": "relu"},
-    {"input_dim": 25, "output_dim": 50, "activation": "relu"},
-    {"input_dim": 50, "output_dim": 50, "activation": "relu"},
-    {"input_dim": 50, "output_dim": 25, "activation": "relu"},
-    {"input_dim": 25, "output_dim": 1, "activation": "sigmoid"},
+    {"input_dim": 4, "output_dim": 1, "activation": "sigmoid"},
 ]
 
 """ EXERCISE : 
@@ -74,9 +71,10 @@ grid_2d = grid.reshape(2, -1).T
 XX, YY = grid
 
 # Create artificial data
-x, y = make_moons(n_samples=N_SAMPLES, noise=0.2, random_state=100)
+x, y = make_circles(n_samples=N_SAMPLES, factor=0.2, noise=0.2, random_state=100)
 # Split test and train sets
-x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=TEST_SIZE, random_state=42)
+x_augmented = np.hstack([x, x**2])
+x_train, x_test, y_train, y_test = train_test_split(x_augmented, y, test_size=TEST_SIZE, random_state=42)
 
 # Plot the artificial data
 make_plot(x, y, "Dataset", file_name="dataset.pdf")
@@ -110,10 +108,10 @@ def use_numpy():
         callback=callback_numpy_plot,
         which="numpy"
     )
-
-    prediction_probs_numpy, _ = full_forward_propagation(np.transpose(grid_2d), params_values, NN_ARCHITECTURE)
+    grid_2d_augmented = np.hstack([grid_2d, grid_2d**2])
+    prediction_probs_numpy, _ = full_forward_propagation(np.transpose(grid_2d_augmented), params_values, NN_ARCHITECTURE)
     prediction_probs_numpy = prediction_probs_numpy.reshape(prediction_probs_numpy.shape[1], 1)
-    make_plot(x_test, y_test, "NumPy Model", file_name=None, xx=XX, yy=YY, preds=prediction_probs_numpy)
+    make_plot(x_test[:, :2], y_test, "NumPy Model", file_name=None, xx=XX, yy=YY, preds=prediction_probs_numpy)
 
 
 def use_tensorflow():
