@@ -10,8 +10,7 @@ Première question pour vous: est-ce que c'est possible de modéliser un problè
 
 Pour obtenir la précision désirée, vous augmenterez le data-set en ajoutant des features dérivées (étape de feature engineering) :
 
-$ \sum_{\forall i}{x_i^{2}} $
-
+<img src="https://render.githubusercontent.com/render/math?math=e^{i \pi} = -1">
 {x_1, x_2} -> {x_1, x_2, x_1^2, x_2^2}
 
 Par conséquence, la taille de vos inputs sera 4 unités.
