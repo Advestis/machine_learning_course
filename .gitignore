@@ -132,4 +132,4 @@ dmypy.json
 /**/*.csv*
 /**/*.gif
 /**/*.png
-/neural_network/logs/
+/perceptron/logs/

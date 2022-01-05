@@ -1,5 +1,3 @@
-jupyterlab
 tensorflow
 pandas
 matplotlib
-sklearn

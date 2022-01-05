@@ -1,3 +1,5 @@
+"""FROM HERE TO ..."""
+
 import os
 os.environ["OMP_NUM_THREADS"] = "1"
 os.environ["OPENBLAS_NUM_THREADS"] = "1"
@@ -42,28 +44,34 @@ def callback_numpy_plot(index, params, which="numpy"):
     make_plot(x_test[:, :2], y_test, plot_title, file_name=file_path, xx=XX, yy=YY, preds=prediction_probs)
 
 
+GRID_X_START = -1.5
+GRID_X_END = 2.5
+GRID_Y_START = -1.0
+GRID_Y_END = 2
+OUTPUT_DIR = "./"
+
+"""...THERE, YOU DO NOT NEED TO UNDERSTAND THE CODE"""
+
+""" EXERCISE :
+Complete NN_ARCHITECTURE to solve the problem at hand
+"""
+
 NN_ARCHITECTURE = [
-    {"input_dim": 4, "output_dim": 1, "activation": "sigmoid"},
+    ...
 ]
 
 """ EXERCISE : 
 Draw the neural network corresponding to NN_ARCHITECTURE. 
 What does it do ? Regression or Classification ? Hint : look at the activation function of the last layer.
-Why are there 2 dimensions in the input of the first layer ?
+Why are there 4 dimensions in the input of the first layer ?
  """
 
-# number of samples in the data set
-N_SAMPLES = 1000
-# ratio between training and test sets
-TEST_SIZE = 0.1
+"""EXERCISE : 
+WHAT ARE THE NEXT TWO VARIABLES FOR ?
+"""
 
-# boundary of the graph
-GRID_X_START = -1.5
-GRID_X_END = 2.5
-GRID_Y_START = -1.0
-GRID_Y_END = 2
-# output directory (the folder must exist on the drive)
-OUTPUT_DIR = "./"
+N_SAMPLES = 1000
+TEST_SIZE = 0.1
 
 # Graph grid
 grid = np.mgrid[GRID_X_START:GRID_X_END:100j, GRID_X_START:GRID_Y_END:100j]
@@ -77,7 +85,7 @@ x_augmented = np.hstack([x, x**2])
 x_train, x_test, y_train, y_test = train_test_split(x_augmented, y, test_size=TEST_SIZE, random_state=42)
 
 # Plot the artificial data
-make_plot(x, y, "Dataset", file_name="dataset.pdf")
+make_plot(x, y, "Dataset", file_name="dataset.png")
 
 
 def use_numpy():
