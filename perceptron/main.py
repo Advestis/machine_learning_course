@@ -55,7 +55,7 @@ OUTPUT_DIR = "./"
 """...THERE, YOU DO NOT NEED TO UNDERSTAND THE CODE"""
 
 """ EXERCISE :
-Complete NN_ARCHITECTURE to solve the problem at hand
+Complete NN_ARCHITECTURE to solve the problem at hand (described in README.md)
 """
 
 NN_ARCHITECTURE = [
