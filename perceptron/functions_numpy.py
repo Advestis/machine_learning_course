@@ -92,12 +92,18 @@ def full_forward_propagation(x, weights_and_biases, nn_architecture):
 
 
 def bce_loss(y_hat, y):
-    """ Binary crossentropy """
+    """ Binary crossentropy, NOT USED IN THE EXAM, but still here for example """
     # number of examples
     n = y_hat.shape[1]
     # calculation of the loss according to the formula
     loss = -1 / n * (np.dot(y, np.log(y_hat).T) + np.dot(1 - y, np.log(1 - y_hat).T))
     return np.squeeze(loss)
+
+
+def mse_loss(y_hat, y):
+    """ Mean square error loss """
+    # CODE HERE
+    return 0
 
 
 def convert_prob_into_class(probs):
@@ -145,6 +151,7 @@ def full_backward_propagation(y_hat, y, memory, weights_and_biases, nn_architect
     y = y.reshape(y_hat.shape)
 
     # Initiation of gradient descent algorithm (derivate of the BCE against y_hat (xtild of last layer))
+    # REPLACE BCE BY MSE
     dxtild_prev = -(np.divide(y, y_hat) - np.divide(1 - y, 1 - y_hat))
 
     for layer_idx_prev, layer in reversed(list(enumerate(nn_architecture))):
@@ -194,6 +201,7 @@ def train(x, y, nn_architecture, epochs, learning_rate, verbose=False, callback=
         y_hat, cache = full_forward_propagation(x, weights_and_biases, nn_architecture)
 
         # calculating metrics and saving them in history
+        # REPLACE BCE BY MSE
         loss = bce_loss(y_hat, y)
         loss_history.append(loss)
         accuracy = get_accuracy_value(y_hat, y)
