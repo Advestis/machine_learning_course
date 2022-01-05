@@ -1,3 +1,5 @@
+## Consignes pour l'examen
+
 Bienvenue à la partie pratique de l'examen pour le cours *"Machine learning pour l'énergétique"*. Nous vous invitons à lire très attentivement (et en entier) le readme ci-présent avant de commencer votre exercice.
 
 Pendant cet expérience, vous aborderez un problème de classification binaire en utilisant un data-set artificiel disponible à travers l'appelle de la fonction datasets.make_circles de la libraire sklearn. Chaque point du data-set est caractérisé par 2 features. L'image ci-dessous montre comment les 2 classes sont reparties dans l'espace des données:
