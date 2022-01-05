@@ -2,13 +2,15 @@ Bienvenue à la partie pratique de l'examen pour le cours "Machine learning pour
 
 Pendant cet expérience, vous aborderez un problème de classification binaire en utilisant un data-set artificiel disponible à travers l'appelle de la fonction datasets.make_circles de la libraire sklearn. Chaque point du data-set est caractérisé par 2 features. L'image ci-dessous montre comment les 2 classes sont reparties dans l'espace des données:
 
-![Image](dataset.pdf)
+![Représentation du data-set](dataset.pdf)
 
 Vous construirez un modèle de machine learning capable de classifier les données (à la fois du test et d'apprentissage) dans le 2 classes avec un accuracy maximale attendue de ~96%. Comme on à appris pendant le cours théorique, la régression logistique sera votre meilleure amie. Toutefois, du haut de votre pluriannuelle expérience sur les réseaux des nuerons, vous trouverez les poids optimales du modèle avec la technique de la backpropagation.
 
 Première question pour vous: est-ce que c'est possible de modéliser un problème de régression logistique sous la forme d'un réseaux de nuerons ? Si oui, avec quel nom =cet architecture est connue  dans la littérature ?
 
 Pour obtenir la précision désirée, vous augmenterez le data-set en ajoutant des features dérivées (étape de feature engineering) :
+
+$ \sum_{\forall i}{x_i^{2}} $
 
 {x_1, x_2} -> {x_1, x_2, x_1^2, x_2^2}
 
