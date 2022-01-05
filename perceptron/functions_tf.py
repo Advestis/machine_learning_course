@@ -3,7 +3,7 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
 
 
-def build_mlp(nn_architecture, learning_rate):
+def build_perceptron(nn_architecture, learning_rate):
     model = Sequential()
     for layer in nn_architecture:
         model.add(Dense(layer["output_dim"], input_dim=layer["input_dim"], activation=layer["activation"]))

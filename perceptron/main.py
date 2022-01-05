@@ -11,7 +11,7 @@ from sklearn.datasets import make_circles
 from sklearn.model_selection import train_test_split
 
 from functions_numpy import make_plot, train, full_forward_propagation, get_accuracy_value
-from functions_tf import build_mlp
+from functions_tf import build_perceptron
 from tensorflow.keras.callbacks import TensorBoard
 
 import argparse
@@ -29,6 +29,7 @@ parser.add_argument(
 )
 
 
+# For plotting
 def callback_numpy_plot(index, params, which="numpy"):
     if which == "numpy":
         plot_title = "NumPy Model - It: {:05}".format(index)
@@ -44,6 +45,7 @@ def callback_numpy_plot(index, params, which="numpy"):
     make_plot(x_test[:, :2], y_test, plot_title, file_name=file_path, xx=XX, yy=YY, preds=prediction_probs)
 
 
+# For plotting
 GRID_X_START = -1.5
 GRID_X_END = 2.5
 GRID_Y_START = -1.0
@@ -64,7 +66,7 @@ NN_ARCHITECTURE = [
 Draw the neural network corresponding to NN_ARCHITECTURE. 
 What does it do ? Regression or Classification ? Hint : look at the activation function of the last layer.
 Why are there 4 dimensions in the input of the first layer ?
- """
+"""
 
 """EXERCISE : 
 WHAT ARE THE NEXT TWO VARIABLES FOR ?
@@ -89,7 +91,9 @@ make_plot(x, y, "Dataset", file_name="dataset.png")
 
 
 def use_numpy():
-    # Training with NumPy
+    """EXERCISE :
+    What does the next command do ?
+    """
     params_values = train(
         x=np.transpose(x_train),
         y=np.transpose(y_train.reshape((y_train.shape[0], 1))),
@@ -99,13 +103,19 @@ def use_numpy():
         verbose=True,
     )
 
-    # Prediction
+    """EXERCISE :
+    What does the next command do, and what is y_test_hat ?
+    """
     y_test_hat, _ = full_forward_propagation(np.transpose(x_test), params_values, NN_ARCHITECTURE)
-    # Accuracy achieved on the test set
+
+    """EXERCISE :
+    What is acc_test ?
+    """
     acc_test = get_accuracy_value(y_test_hat, np.transpose(y_test.reshape((y_test.shape[0], 1))))
     print("Test set accuracy: {:.2f}".format(acc_test))
 
-    # Training again, just to produce the graph
+    """FROM HERE TO ..."""
+
     params_values = train(
         x=np.transpose(x_train),
         y=np.transpose(y_train.reshape((y_train.shape[0], 1))),
@@ -117,16 +127,19 @@ def use_numpy():
         which="numpy"
     )
     grid_2d_augmented = np.hstack([grid_2d, grid_2d**2])
-    prediction_probs_numpy, _ = full_forward_propagation(np.transpose(grid_2d_augmented), params_values, NN_ARCHITECTURE)
+    prediction_probs_numpy, _ = full_forward_propagation(
+        np.transpose(grid_2d_augmented), params_values, NN_ARCHITECTURE
+    )
     prediction_probs_numpy = prediction_probs_numpy.reshape(prediction_probs_numpy.shape[1], 1)
     make_plot(x_test[:, :2], y_test, "NumPy Model", file_name=None, xx=XX, yy=YY, preds=prediction_probs_numpy)
 
+    """...THERE, YOU DO NOT NEED TO UNDERSTAND THE CODE"""
+
 
 def use_tensorflow():
-    # Training with Tensorflow
     log_dir = "logs/fit/"
     tensorboard_callback = TensorBoard(log_dir=log_dir, histogram_freq=1)
-    model = build_mlp(NN_ARCHITECTURE, learning_rate=0.01)
+    model = build_perceptron(NN_ARCHITECTURE, learning_rate=0.01)
     model.fit(
         x_train,
         y_train,
@@ -139,6 +152,8 @@ def use_tensorflow():
     print(model.evaluate(x_test, y_test))
 
 
+"""FROM HERE TO ..."""
+
 if __name__ == '__main__':
     args = parser.parse_args()
     engine = args.engine
@@ -148,3 +163,5 @@ if __name__ == '__main__':
         use_tensorflow()
     else:
         raise ValueError(f"Invalid engine {engine}")
+
+"""...THERE, YOU DO NOT NEED TO UNDERSTAND THE CODE"""
