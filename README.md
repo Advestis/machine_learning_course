@@ -22,4 +22,4 @@ Par conséquence, la taille de vos inputs sera 4 unités.
 
   - répondre aux questions présentes dans les différentes *docstrings*
 
-- <b>Deuxième exercice.</b> Dans le module ```functions_numy.py```, nous vous invitons à remplacer la fonction *loss BCE (binary cross-entropy)* par la *MSE (mean squared error)*. En particulier vous devrez ajouter les parties manquantes du code que vous sont demandées aux lignes 103 et 155. Vérifiez donc la performance de votre code: est-ce que c'était une bonne idée cet remplacement ? Pourquoi la régression logistique nécessite effectivement de la *loss BCE* ?
+- <b>Deuxième exercice.</b> Dans le module ```functions_numy.py```, nous vous invitons à remplacer la fonction *loss BCE (binary cross-entropy)* par la *MSE (mean squared error)*. En particulier vous devrez ajouter les parties manquantes du code que vous sont demandées aux lignes 103, 155 et 205. Nous vous invitons aussi à implémenter cette modification à la ligne 11 du module  ```functions_tf.py```. Vérifiez donc la performance de votre code: est-ce que c'était une bonne idée cet remplacement ? Pourquoi la régression logistique nécessite effectivement de la *loss BCE* ?
