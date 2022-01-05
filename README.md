@@ -6,7 +6,7 @@ Pendant cet expérience, vous aborderez un problème de classification binaire e
 
 Vous construirez un modèle de machine learning capable de classifier les données (à la fois du test et d'apprentissage) dans le 2 classes avec un accuracy maximale attendue de ~96%. Comme on à appris pendant le cours théorique, la régression logistique sera votre meilleure amie. Toutefois, du haut de votre pluriannuelle expérience sur les réseaux des nuerons, vous trouverez les poids optimales du modèle avec la technique de la backpropagation.
 
-<b>Une première question pour vous:</b> est-ce que c'est possible de modéliser un problème de régression logistique sous la forme d'un réseaux de nuerons ? Si oui, avec quel nom =cet architecture est connue  dans la littérature ?
+<sub>Une première question pour vous:</sub> est-ce que c'est possible de modéliser un problème de régression logistique sous la forme d'un réseaux de nuerons ? Si oui, avec quel nom =cet architecture est connue  dans la littérature ?
 
 Pour obtenir la précision désirée, vous augmenterez le data-set en ajoutant des features dérivées (étape de feature engineering) :
 
