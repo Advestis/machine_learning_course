@@ -39,4 +39,4 @@ Par conséquence, la taille de vos inputs sera 4 unités.
 manquantes du code que vous sont demandées à la ligne 105 et à mettre à jour la ligne 205. Nous vous invitons aussi à
 implémenter cette modification à la ligne 11 du module  ```functions_tf.py```.
 Vérifiez donc la performance de votre code: est-ce que ce changement a eu un impact positif ou négatif sur 
-l'apprentissage ? Comment aurions-nous pu nous en douter ?
+l'apprentissage ? Dans un exemple plus complexe, quel impact ce changement devrait-il avoir selon vous ?
