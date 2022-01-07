@@ -133,3 +133,4 @@ dmypy.json
 /**/*.gif
 /**/*.png
 /perceptron/logs/
+!/perceptron/dataset.png
