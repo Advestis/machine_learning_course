@@ -14,7 +14,7 @@ X1 et X2 et les outputs se répartissent en deux classes, les points bleus et le
 Vous construirez un modèle de machine learning capable de classifier les données (à la fois de l'ensemble de test et de
 l'ensemble d'apprentissage) dans le 2 classes avec une précision (*accuracy*) attendue de ~96%.
 Comme vous l'avez vu pendant le cours théorique, la régression logistique sera votre meilleure amie.
-Vous devez trouver les poids optimales du modèle avec la technique de la *backpropagation*.
+Vous devez trouver les poids optimaux du modèle avec la technique de la *backpropagation*.
 
 <ins>Une première question pour vous:</ins> Est-il possible de modéliser un problème de régression logistique sous la
 forme d'un réseaux de neurones ? Si oui, avec quel nom cet architecture est connue  dans la littérature ?
