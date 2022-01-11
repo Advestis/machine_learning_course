@@ -11,8 +11,8 @@ from sklearn.datasets import make_circles
 from sklearn.model_selection import train_test_split
 
 from functions_numpy import make_plot, train, full_forward_propagation, get_accuracy_value
-from functions_tf import build_perceptron
-from tensorflow.keras.callbacks import TensorBoard
+# from functions_tf import build_perceptron
+# from tensorflow.keras.callbacks import TensorBoard
 
 import argparse
 
@@ -136,20 +136,20 @@ def use_numpy():
     """...THERE, YOU DO NOT NEED TO UNDERSTAND THE CODE"""
 
 
-def use_tensorflow():
-    log_dir = "logs/fit/"
-    tensorboard_callback = TensorBoard(log_dir=log_dir, histogram_freq=1)
-    model = build_perceptron(NN_ARCHITECTURE, learning_rate=0.01)
-    model.fit(
-        x_train,
-        y_train,
-        epochs=30,
-        batch_size=128,
-        validation_split=0.2,  # Does not exist in the NumPy version
-        verbose=2,
-        callbacks=tensorboard_callback
-    )
-    print(model.evaluate(x_test, y_test))
+# def use_tensorflow():
+#     log_dir = "logs/fit/"
+#     tensorboard_callback = TensorBoard(log_dir=log_dir, histogram_freq=1)
+#     model = build_perceptron(NN_ARCHITECTURE, learning_rate=0.01)
+#     model.fit(
+#         x_train,
+#         y_train,
+#         epochs=30,
+#         batch_size=128,
+#         validation_split=0.2,  # Does not exist in the NumPy version
+#         verbose=2,
+#         callbacks=tensorboard_callback
+#     )
+#     print(model.evaluate(x_test, y_test))
 
 
 """FROM HERE TO ..."""
@@ -160,7 +160,8 @@ if __name__ == '__main__':
     if engine == "np" or engine == "numpy":
         use_numpy()
     elif engine == "tf" or engine == "tensorflow":
-        use_tensorflow()
+        pass
+        # use_tensorflow()
     else:
         raise ValueError(f"Invalid engine {engine}")
 
