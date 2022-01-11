@@ -39,8 +39,7 @@ Par conséquence, la taille de vos inputs sera 4 unités.
 
 - <b>Exercice 2.</b> Dans le module ```functions_numpy.py```, nous vous invitons à remplacer la fonction 
 *loss BCE (binary cross-entropy)* par la *loss MSE (mean squared error)*. En particulier vous devrez ajouter les parties
-manquantes du code qui vous sont demandées à la ligne 105 et à mettre à jour les lignes 155 et 205. Nous vous invitons aussi à
-implémenter cette modification à la ligne 11 du module  ```functions_tf.py```.
+manquantes du code qui vous sont demandées à la ligne 105 et à mettre à jour les lignes 155 et 205.
 Vérifiez la performance de votre code: est-ce que ce changement a eu un impact positif ou négatif sur 
 l'apprentissage ? Dans un exemple plus complexe, quel impact ce changement devrait-il avoir selon vous ?
 
