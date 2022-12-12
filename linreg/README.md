@@ -23,7 +23,7 @@ is not finished
 Then, open **regressor.py**. Spend some time on it to broadly understand what is in it. Then, you will
 have to code the missing parts of the code (look for "Code here" in the file). That will take a while.
 
-You can use the slides from the theoretical course to help you : https://fr.overleaf.com/read/pjmmfpntzkfq
+You can use the slides from the theoretical course to help you : https://fr.overleaf.com/read/nfprtjqgvzyc
 
 If the code works, you should be able to run **main.py** without error and produce some graphs. 
 
